@@ -28,7 +28,7 @@ public class User extends Thread implements Serializable {
                 Socket socket = Server.connectedDevices.get(this.userId);
               
                 try{
-                   
+                   if (socket != null){
                     InputStream inputStream = socket.getInputStream();
                     System.out.println("Before create objinputstream, socket is " + socket + " and inputstream is " + inputStream );
                     ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);  
@@ -38,6 +38,10 @@ public class User extends Thread implements Serializable {
                     System.out.println("Messages in = " + messagesin.size());
                     System.out.println("Taked message from  " + msg.sender + " to " + msg.receiver);    
                     messageWorker(msg);
+                   }else{
+                    System.out.println("Waiting for user");
+                    Thread.sleep(1000);   
+                   }
                 
                 } catch (Exception e) {
                     
