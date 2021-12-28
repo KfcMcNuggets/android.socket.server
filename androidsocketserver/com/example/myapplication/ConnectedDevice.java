@@ -5,6 +5,7 @@ import java.lang.String;
 import java.lang.Throwable;
 import static com.example.myapplication.Server.userList;
 import static com.example.myapplication.Server.userListMutex;
+import static com.example.myapplication.Server.createId;;
 
 
 public class ConnectedDevice extends Thread implements Serializable{
@@ -24,7 +25,8 @@ public class ConnectedDevice extends Thread implements Serializable{
                 ObjectInputStream objectInputStream = new ObjectInputStream(inputStream);
                 Message msg = (Message) objectInputStream.readObject();
                 System.out.println(msg.msg);
-                User user = new User(msg.sender, "Id#" + userList.size());
+                String userId = "Id#" + createId();
+                User user = new User(msg.sender, userId);
                 
                 Server.connectedDevicesLock.writeLock().lock();
                 Server.connectedDevices.put(user.getUserId(), socket);
@@ -34,14 +36,14 @@ public class ConnectedDevice extends Thread implements Serializable{
                 userList.add(user);
                 userListMutex.writeLock().unlock();
 
-                System.out.println("created new username " + user.getUsername() + " Id = " + user.getUserId());
+                System.out.println("created new username " + user.getUsername() + userId);
                 
                 try {
                     
                     OutputStream outputStream =  socket.getOutputStream();
-                
                     ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
                     objectOutputStream.writeObject(user.getUserId());
+                 
                 } catch (Exception e) {
                     System.out.println("Error in sending userId " + e);
                 }
